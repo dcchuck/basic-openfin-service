@@ -8,6 +8,11 @@ async function main () {
         })
     }
 
+	function updateLastIncrementer(uuid) {
+		const incrementDiv = document.getElementById('last-app');
+		incrementDiv.innerText = `Last Incremented By ${uuid}`;
+	}
+
     let x = 0;
     const registeredApps = [];
     const service = await fin.desktop.Service.register('counter');
@@ -21,18 +26,21 @@ async function main () {
         registeredApps.push(id);
         let appToRegister = fin.desktop.Application.wrap(id.uuid);
         appToRegister.addEventListener('closed', () => removeAppFromRegisteredApps(id.uuid));
+        appToRegister.addEventListener('crashed', () => removeAppFromRegisteredApps(id.uuid));
     });
     service.register('getValue', (payload, id) => {
         console.log(`Value of x requested from ${id.uuid}`);
         return x;
     })
-    service.register('increment', () => {
+    service.register('increment', (payload, id) => {
         ++x;
+		updateLastIncrementer(id.uuid);
         updateApps(x);
 		return x;
     });
-    service.register('incrementBy', (payload) => {
+    service.register('incrementBy', (payload, id) => {
         x += payload.amount;
+		updateLastIncrementer(id.uuid);
         updateApps(x);
 		return x;
     });
