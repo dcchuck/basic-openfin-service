@@ -15,7 +15,7 @@ async function main () {
 
     let x = 0;
     const registeredApps = [];
-    const service = await fin.desktop.Service.register('counter');
+    const service = await fin.desktop.Service.register();
     function updateApps(x) {
         registeredApps.forEach(app => {
             service.dispatch(app, 'valueUpdated', x);
